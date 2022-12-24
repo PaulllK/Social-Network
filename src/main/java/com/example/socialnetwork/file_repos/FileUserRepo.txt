@@ -1,0 +1,70 @@
+package repositories;
+
+import customExceptions.RepoException;
+import domain.Entity;
+import domain.User;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileUserRepo extends UserRepo{
+    private Path filePath;
+
+    public FileUserRepo(String fileName) {
+        this.filePath = Paths.get(fileName);
+        loadFromFile();
+    }
+
+    private void loadFromFile() {
+        try {
+            List<String> lines = Files.readAllLines(filePath);
+            if( lines.size() > 0 && !lines.get(0).isBlank() ) { // if we have entities
+                lines.forEach(line -> {
+                    String[] fields = line.split(";");
+                    User u = new User(Integer.parseInt(fields[0]), fields[1], fields[2], fields[3]);
+                    super.add(u);
+                });
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeToFile() {
+        List<String> formattedUsers = new ArrayList<>();
+
+        this.allUsers.forEach(user -> {
+            String strUser = "";
+
+            strUser += Integer.toString(user.getId()) + ";";
+            strUser += user.getFirstName() + ";";
+            strUser += user.getLastName() + ";";
+            strUser += user.getPassword();
+
+            formattedUsers.add(strUser);
+
+        });
+
+        try {
+            Files.write(filePath, formattedUsers);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void add(User user) {
+        super.add(user);
+        writeToFile();
+    }
+
+    @Override
+    public void delete(int id) {
+        super.delete(id);
+        writeToFile();
+    }
+}

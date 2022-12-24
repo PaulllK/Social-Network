@@ -1,0 +1,88 @@
+package repositories;
+
+import domain.Friendship;
+import domain.User;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileFriendshipRepo extends FriendshipRepo{
+
+    private Path filePath;
+
+    public FileFriendshipRepo(String fileName) {
+        this.filePath = Paths.get(fileName);
+        loadFromFile();
+    }
+
+    public Path getFilePath() {
+        return filePath;
+    }
+
+    private void loadFromFile() {
+        try {
+            List<String> lines = Files.readAllLines(filePath);
+            if( lines.size() > 0 && !lines.get(0).isBlank() ) { // if we have entities
+                lines.forEach(line -> {
+                    String[] fields = line.split(";");
+
+                    Friendship f = new Friendship (
+                            Integer.parseInt(fields[0]),
+                            Integer.parseInt(fields[1]),
+                            Integer.parseInt(fields[2]),
+                            LocalDateTime.parse(fields[3], dateFormatter)
+                    );
+                    super.add(f);
+                });
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeToFile() {
+        List<String> formattedFrnds = new ArrayList<>();
+
+        this.allFriendships.forEach(frnd -> {
+            String strFrnd = "";
+
+            strFrnd += Integer.toString(frnd.getId()) + ";";
+            strFrnd += Integer.toString(frnd.getId1()) + ";";
+            strFrnd += Integer.toString(frnd.getId2()) + ";";
+            strFrnd += frnd.getFriendsSince().format(dateFormatter);
+
+            formattedFrnds.add(strFrnd);
+
+        });
+
+        try {
+            Files.write(filePath, formattedFrnds);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void add(Friendship f) {
+        super.add(f);
+        writeToFile();
+    }
+
+    @Override
+    public void delete(int id) {
+        super.delete(id);
+        writeToFile();
+    }
+
+    @Override
+    public void deleteWithId(int id) {
+        super.deleteWithId(id);
+        writeToFile();
+    }
+}

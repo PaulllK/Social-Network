@@ -1,0 +1,200 @@
+package com.example.socialnetwork.UI;
+
+import com.example.socialnetwork.domain.Friendship;
+import com.example.socialnetwork.domain.User;
+import com.example.socialnetwork.services.UserService;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Scanner;
+
+public class ConsoleUI {
+
+    private UserService usc;
+    private String menu = "Menu\n"
+                + "0 - exit application\n"
+                + "1 - add user\n"
+                + "2 - delete user\n"
+                + "3 - show users\n"
+                + "4 - add friendship\n"
+                + "5 - delete friendship\n"
+                + "6 - show friendships\n"
+                + "7 - number of communities (friends connections)\n";
+    private Scanner scn = new Scanner(System.in);
+
+    public ConsoleUI(UserService usc) {
+        this.usc = usc;
+    }
+
+    private void idErrMsg(){
+        System.out.println("id must be a number!\n");
+    }
+
+    private void noFriendsMsg() {
+        System.out.println("no one made friends!");
+    }
+
+    private void addUser() {
+        String firstName, lastName, password;
+
+        System.out.println("first name: ");
+        firstName = scn.nextLine();
+
+        System.out.println("last name: ");
+        lastName = scn.nextLine();
+
+        System.out.println("password: ");
+        password = scn.nextLine();
+
+        usc.addTheUser(firstName, lastName, password);
+
+        System.out.println("user was successfully added!\n");
+
+    }
+
+    private void showUsers() {
+        List<User> users = usc.allUsers();
+
+        if(users.size() == 0)
+            System.out.println("no users have been added!");
+        else {
+            System.out.println("All users:");
+            for(User u : users)
+                System.out.println(u.toString());
+        }
+
+        System.out.print("\n");
+    }
+
+    private void deleteUser() {
+        try {
+            int id;
+            System.out.println("id: ");
+            id = Integer.parseInt(scn.nextLine());
+
+            usc.deleteTheUser(id);
+
+            System.out.println("user was successfully deleted!\n");
+        }catch (NumberFormatException e){
+            idErrMsg();
+        }
+    }
+
+    private void addFriendship() {
+        try {
+            int id1, id2;
+
+            System.out.println("first user's id: ");
+            id1 = Integer.parseInt(scn.nextLine());
+
+            System.out.println("second user's id: ");
+            id2 = Integer.parseInt(scn.nextLine());
+
+            List<User> friends = usc.makeFriends(id1, id2); // array of the two friends
+            System.out.println(friends.get(0) + " and " + friends.get(1) + " have become friends!\n");
+        }catch (NumberFormatException e){
+            idErrMsg();
+        }
+    }
+
+    private void showFriendships() {
+
+        List<Friendship> frnds = usc.allFrnds();
+
+        if(frnds.size() == 0)
+            noFriendsMsg();
+        else {
+            System.out.println("All friendships:");
+            for(Friendship f : frnds) {
+                int id1 = f.getId1(), id2 = f.getId2();
+
+                String user1 = usc.getUserRepo().find(id1).toString();
+                String user2 = usc.getUserRepo().find(id2).toString();
+
+                LocalDateTime friendsSince = f.getFriendsSince();
+
+                System.out.println(
+                        user1 +
+                        " and " +
+                        user2 +
+                        " are friends since " +
+                        friendsSince.format(usc.getFrndRepo().getDateFormatter())
+                );
+            }
+        }
+
+        System.out.print("\n");
+
+    }
+
+    private void deleteFriendship() {
+        try {
+            int id;
+
+            System.out.println("friendship id: ");
+            id = Integer.parseInt(scn.nextLine());
+
+            List<User> friends = usc.deleteTheFriendship(id); // array of the two friends
+            System.out.println(friends.get(0) + " and " + friends.get(1) + " are no longer friends!\n");
+        }catch (NumberFormatException e){
+            idErrMsg();
+        }
+    }
+
+    private void showCommunities() {
+        int nr = usc.communities();
+
+        if(nr == 0)
+            noFriendsMsg();
+        else {
+            System.out.println("There are " + nr + " communitites");
+        }
+
+        System.out.print("\n");
+    }
+
+    public void run() {
+        while(true) {
+            System.out.print(this.menu);
+
+            System.out.print(">>");
+
+            int cmd;
+
+            try{
+                cmd = Integer.parseInt(scn.nextLine());
+
+                if(cmd == 0)
+                    break;
+                else if(cmd == 1){
+                    addUser();
+                }
+                else if(cmd == 2){
+                    deleteUser();
+                }
+                else if(cmd == 3){
+                    showUsers();
+                }
+                else if(cmd == 4){
+                    addFriendship();
+                }
+                else if(cmd == 5){
+                    deleteFriendship();
+                }
+                else if(cmd == 6){
+                    showFriendships();
+                }
+                else if(cmd == 7){
+                    showCommunities();
+                }
+                else{
+                    System.out.println("invalid command!\n");
+                }
+            }catch (NumberFormatException e){
+                System.out.println("command must be a number!\n");
+            }catch (RuntimeException e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+}
