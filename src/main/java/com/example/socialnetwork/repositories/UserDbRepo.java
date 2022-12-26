@@ -1,10 +1,11 @@
 package com.example.socialnetwork.repositories;
 
+import com.example.socialnetwork.customExceptions.RepoException;
 import com.example.socialnetwork.domain.User;
 
 import java.sql.*;
 
-public class UserDbRepo extends UserRepo {
+public class UserDbRepo implements Repository<User> {
 
     private String url;
     private String userName;
@@ -20,7 +21,7 @@ public class UserDbRepo extends UserRepo {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        loadFromDb();
+        //loadFromDb();
     }
 
     public String getUrl() {
@@ -47,25 +48,25 @@ public class UserDbRepo extends UserRepo {
         this.password = password;
     }
 
-    private void loadFromDb() {
-        try {
-            PreparedStatement statement = conn.prepareStatement("SELECT * FROM users");
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String first_name = resultSet.getString("first_name");
-                String last_name = resultSet.getString("last_name");
-                String password = resultSet.getString("password");
-
-                User user = new User(first_name, last_name, password);
-                user.setId(id);
-                allUsers.add(user);
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
+//    private void loadFromDb() {
+//        try {
+//            PreparedStatement statement = conn.prepareStatement("SELECT * FROM users");
+//            ResultSet resultSet = statement.executeQuery();
+//
+//            while (resultSet.next()) {
+//                int id = resultSet.getInt("id");
+//                String first_name = resultSet.getString("first_name");
+//                String last_name = resultSet.getString("last_name");
+//                String password = resultSet.getString("password");
+//
+//                User user = new User(first_name, last_name, password);
+//                user.setId(id);
+//                allUsers.add(user);
+//            }
+//        } catch (SQLException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void add(User user) {
@@ -77,15 +78,13 @@ public class UserDbRepo extends UserRepo {
             ps.setString(2, user.getLastName());
             ps.setString(3, user.getPassword());
 
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            // setting our user id in program memory list of users
-            if(rs.next()) {
-                int pk = rs.getInt("id");
-                user.setId(pk);
-
-                super.add(user);
-            }
+//            ps.executeUpdate();
+//            ResultSet rs = ps.getGeneratedKeys();
+//            // setting our user id in program memory list of users
+//            if(rs.next()) {
+//                int pk = rs.getInt("id");
+//                user.setId(pk);
+//            }
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -93,13 +92,36 @@ public class UserDbRepo extends UserRepo {
 
     @Override
     public void delete(int id) {
-        super.delete(id);
         String sql = "DELETE FROM users WHERE id=?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, id);
             ps.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public User find(User user) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE first_name=? AND last_name=? AND password=?");
+
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setString(3, user.getPassword());
+
+            ResultSet resultSet = ps.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new RepoException("user or password incorrect!")
+            }
+
+            int id = resultSet.getInt("id");
+            user.setId(id);
+
+            return user;
         }catch (SQLException e){
             e.printStackTrace();
         }

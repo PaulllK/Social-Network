@@ -1,77 +1,77 @@
-package com.example.socialnetwork.repositories;
-
-import com.example.socialnetwork.customExceptions.RepoException;
-import com.example.socialnetwork.domain.Friendship;
-
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-public class FriendshipRepo implements Repository<Friendship>{
-
-    protected List<Friendship> allFriendships = new ArrayList<>();
-    protected final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    public List<Friendship> getAll() {
-        return allFriendships;
-    }
-
-    public DateTimeFormatter getDateFormatter() {
-        return dateFormatter;
-    }
-
-    public void deleteWithId(int id) {
-        int i = 0;
-        while(i < allFriendships.size()) {
-            if (allFriendships.get(i).getId1() == id || allFriendships.get(i).getId2() == id)
-                allFriendships.remove(i);
-            else
-                i++;
-        }
-    }
-
-    private int frndPos(int id) {
-        for(int i = 0; i < allFriendships.size(); i++) {
-            Friendship f = allFriendships.get(i);
-
-            if(f.getId() == id)
-                return i;
-        }
-
-        return -1;
-    }
-
-    @Override
-    public void add(Friendship frnd) {
-        for(int i = 0; i < allFriendships.size(); i++) {
-            Friendship f = allFriendships.get(i);
-            int id = f.getId(), id1 = f.getId1(), id2 = f.getId2();
-
-            if(frnd.getId() == id)
-                throw new RepoException("friendship id already used!\n");
-
-            if(frnd.getId1() == id1 && frnd.getId2() == id2 || frnd.getId1() == id2 && frnd.getId2() == id1)
-                throw new RepoException("users are already friends!\n");
-        }
-        allFriendships.add(frnd);
-    }
-
-    @Override
-    public void delete(int id) {
-        int pos = frndPos(id);
-
-        if(pos == -1)
-            throw new RepoException("users aren't friends!\n");
-
-        allFriendships.remove(pos);
-    }
-
-    @Override
-    public Friendship find(int id) {
-        int pos = frndPos(id);
-
-        if(pos == -1)
-            throw new RepoException("friendship non-existent!\n");
-
-        return allFriendships.get(pos);
-    }
-}
+//package com.example.socialnetwork.repositories;
+//
+//import com.example.socialnetwork.customExceptions.RepoException;
+//import com.example.socialnetwork.domain.Friendship;
+//
+//import java.time.format.DateTimeFormatter;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class FriendshipRepo implements Repository<Friendship>{
+//
+//    protected List<Friendship> allFriendships = new ArrayList<>();
+//    protected final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+//    public List<Friendship> getAll() {
+//        return allFriendships;
+//    }
+//
+//    public DateTimeFormatter getDateFormatter() {
+//        return dateFormatter;
+//    }
+//
+//    public void deleteWithId(int id) {
+//        int i = 0;
+//        while(i < allFriendships.size()) {
+//            if (allFriendships.get(i).getId1() == id || allFriendships.get(i).getId2() == id)
+//                allFriendships.remove(i);
+//            else
+//                i++;
+//        }
+//    }
+//
+//    private int frndPos(int id) {
+//        for(int i = 0; i < allFriendships.size(); i++) {
+//            Friendship f = allFriendships.get(i);
+//
+//            if(f.getId() == id)
+//                return i;
+//        }
+//
+//        return -1;
+//    }
+//
+//    @Override
+//    public void add(Friendship frnd) {
+//        for(int i = 0; i < allFriendships.size(); i++) {
+//            Friendship f = allFriendships.get(i);
+//            int id = f.getId(), id1 = f.getId1(), id2 = f.getId2();
+//
+//            if(frnd.getId() == id)
+//                throw new RepoException("friendship id already used!\n");
+//
+//            if(frnd.getId1() == id1 && frnd.getId2() == id2 || frnd.getId1() == id2 && frnd.getId2() == id1)
+//                throw new RepoException("users are already friends!\n");
+//        }
+//        allFriendships.add(frnd);
+//    }
+//
+//    @Override
+//    public void delete(int id) {
+//        int pos = frndPos(id);
+//
+//        if(pos == -1)
+//            throw new RepoException("users aren't friends!\n");
+//
+//        allFriendships.remove(pos);
+//    }
+//
+//    @Override
+//    public Friendship find(int id) {
+//        int pos = frndPos(id);
+//
+//        if(pos == -1)
+//            throw new RepoException("friendship non-existent!\n");
+//
+//        return allFriendships.get(pos);
+//    }
+//}

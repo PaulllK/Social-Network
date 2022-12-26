@@ -153,4 +153,13 @@ public class UserService {
         return nr;
 
     }
+
+    public User findUserByData(String firstName, String lastName, String password) {
+        // validate provided data before doing database search
+        User u = new User(firstName, lastName, password);
+        val.validateUser(u);
+
+        
+
+    }
 }

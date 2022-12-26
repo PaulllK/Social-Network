@@ -1,5 +1,11 @@
 package com.example.socialnetwork;
 
+import com.example.socialnetwork.controllers.LoginController;
+import com.example.socialnetwork.repositories.FriendshipDbRepo;
+import com.example.socialnetwork.repositories.UserDbRepo;
+import com.example.socialnetwork.services.UserService;
+import com.example.socialnetwork.validators.FriendshipValidator;
+import com.example.socialnetwork.validators.UserValidator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,30 +21,31 @@ public class SocialNetwork extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        String url = "jdbc:postgresql://localhost:5432/social_network";
-        String username = "postgres";
-        String password = "postgres";
+        try {
+//            String url = "jdbc:postgresql://localhost:5432/social_network";
+//            String username = "postgres";
+//            String password = "postgres";
+//
+//            UserDbRepo repo = new UserDbRepo(url, username, password);
+//            FriendshipDbRepo frndRepo = new FriendshipDbRepo(url, username, password);
+//
+//            UserValidator val = new UserValidator();
+//            FriendshipValidator fVal = new FriendshipValidator();
+//
+//            UserService srv = new UserService(repo, frndRepo, val, fVal);
 
-        UserDbRepo repo = new UserDbRepo(url, username, password);
-        FriendshipDbRepo frndRepo = new FriendshipDbRepo(url, username, password);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loginView.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
-        UserValidator val = new UserValidator();
-        FriendshipValidator fVal = new FriendshipValidator();
+            primaryStage.setTitle("Log In");
+            primaryStage.setScene(scene);
 
-        UserService usc = new UserService(repo, frndRepo, val, fVal);
+            LoginController logInController = fxmlLoader.getController();
+            //logInController.setSrv(srv);
 
-        initView(primaryStage);
-        primaryStage.show();
-    }
-
-    private void initView(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("views/loginView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 420, 260);
-        scene.getStylesheets().add(SocialNetwork.class.getResource("css/login.css").toExternalForm());
-        primaryStage.setTitle("Log In");
-        primaryStage.setScene(scene);
-
-        LogInController logInController = fxmlLoader.getController();
-        logInController.setNetworkService(networkService);
+            primaryStage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
