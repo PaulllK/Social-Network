@@ -19,7 +19,7 @@ public class FriendshipDbRepo implements Repository<Friendship>{
         }catch (SQLException e){
             e.printStackTrace();
         }
-        loadFromDb();
+        //loadFromDb();
     }
 
     public String getUrl() {
@@ -46,25 +46,24 @@ public class FriendshipDbRepo implements Repository<Friendship>{
         this.password = password;
     }
 
-    private void loadFromDb() {
-        try {
-            PreparedStatement statement = conn.prepareStatement("SELECT * FROM friendships");
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int id1 = resultSet.getInt("id1");
-                int id2 = resultSet.getInt("id2");
-                Timestamp friendsSince = resultSet.getTimestamp("friends_since");
-
-                Friendship f = new Friendship(id1, id2, friendsSince.toLocalDateTime());
-                f.setId(id);
-                allFriendships.add(f);
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
+//    private void loadFromDb() {
+//        try {
+//            PreparedStatement statement = conn.prepareStatement("SELECT * FROM friendships");
+//            ResultSet resultSet = statement.executeQuery();
+//
+//            while (resultSet.next()) {
+//                int id = resultSet.getInt("id");
+//                int id1 = resultSet.getInt("id1");
+//                int id2 = resultSet.getInt("id2");
+//                Timestamp friendsSince = resultSet.getTimestamp("friends_since");
+//
+//                Friendship f = new Friendship(id1, id2, friendsSince.toLocalDateTime());
+//                f.setId(id);
+//            }
+//        } catch (SQLException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void add(Friendship friendship) {
@@ -83,8 +82,6 @@ public class FriendshipDbRepo implements Repository<Friendship>{
             if(rs.next()) {
                 int pk = rs.getInt("id");
                 friendship.setId(pk);
-
-                super.add(friendship);
             }
         }catch (SQLException e){
             e.printStackTrace();
@@ -93,7 +90,6 @@ public class FriendshipDbRepo implements Repository<Friendship>{
 
     @Override
     public void delete(int id) {
-        super.delete(id);
         String sql = "DELETE FROM friendships WHERE id=?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -106,8 +102,11 @@ public class FriendshipDbRepo implements Repository<Friendship>{
     }
 
     @Override
+    public Friendship find(Friendship entity) {
+        return null;
+    }
+
     public void deleteWithId(int id) {
-        super.deleteWithId(id);
         // TO DO: delete friendships that contain users with given id
         String sql = "DELETE FROM friendships WHERE id1=? OR id2=?";
         try {

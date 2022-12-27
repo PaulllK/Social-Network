@@ -19,7 +19,7 @@ public class UserController implements Observer
     @Override
     public void update()
     {
-
+        System.out.println("updated");
     }
 
 }

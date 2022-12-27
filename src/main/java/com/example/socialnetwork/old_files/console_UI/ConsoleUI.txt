@@ -1,4 +1,4 @@
-package com.example.socialnetwork.UI;
+package com.example.socialnetwork.old_files.console_UI;
 
 import com.example.socialnetwork.domain.Friendship;
 import com.example.socialnetwork.domain.User;

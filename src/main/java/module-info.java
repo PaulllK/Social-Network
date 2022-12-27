@@ -4,7 +4,7 @@ module com.example.socialnetwork {
     requires java.sql;
 
 
-    opens com.example.socialnetwork to javafx.fxml;
+    opens com.example.socialnetwork.controllers to javafx.fxml;
     exports com.example.socialnetwork;
     exports com.example.socialnetwork.controllers;
 }

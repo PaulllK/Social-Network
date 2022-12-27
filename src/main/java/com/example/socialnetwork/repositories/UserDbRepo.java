@@ -126,6 +126,7 @@ public class UserDbRepo implements Repository<User> {
             return user;
         }catch (SQLException e){
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -150,6 +151,7 @@ public class UserDbRepo implements Repository<User> {
             return allUsers;
         } catch (SQLException e){
             e.printStackTrace();
+            return null;
         }
     }
 }
