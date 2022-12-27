@@ -35,7 +35,7 @@ public class LoginController {
         String password = passwordTextField.getText();
 
         try {
-            User user = srv.findUserByData(firstName, lastName, password);
+            //User user = srv.findUserByData(firstName, lastName, password);
 
             firstNameTextField.setText("");
             lastNameTextField.setText("");
@@ -43,30 +43,28 @@ public class LoginController {
 
 //            Stage loginStage = (Stage) firstNameTextField.getScene().getWindow();
 //            loginStage.hide();
-
+            User user = new User(firstName, lastName, password);
             startUserSession(user);
         } catch (RepoException e) {
-            PopupMessage.showErrorMessage(e.getMessage());
+            PopUpMessage.showErrorMessage(e.getMessage());
         }
     }
 
     private void startUserSession(User user/*, Stage loginStage* - use this parameter if log in window will be hidden*/) {
         try {
             Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("userView.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("userView.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
-            scene.getStylesheets().add(SocialNetwork.class.getResource("css/style.css").toExternalForm());
-
-            stage.setTitle("Social Network");
+            stage.setTitle(user.getFirstName() + " " + user.getLastName());
             stage.setScene(scene);
 
             UserController userController = fxmlLoader.getController();
-            userController.setData(networkService, user, loginStage);
+            //userController.setData(srv, user);
 
             stage.show();
         } catch (IOException exception) {
-            PopupMessage.showErrorMessage("Session start error!");
+            PopUpMessage.showErrorMessage("Session start error!");
         }
     }
 }

@@ -3,49 +3,42 @@ package com.example.socialnetwork.services;
 import com.example.socialnetwork.customExceptions.RepoException;
 import com.example.socialnetwork.domain.Friendship;
 import com.example.socialnetwork.domain.User;
-import com.example.socialnetwork.repositories.FriendshipRepo;
-import com.example.socialnetwork.repositories.UserRepo;
+import com.example.socialnetwork.repositories.FriendshipDbRepo;
+import com.example.socialnetwork.repositories.UserDbRepo;
 import com.example.socialnetwork.validators.FriendshipValidator;
 import com.example.socialnetwork.validators.UserValidator;
+import com.example.socialnetwork.utils.observer.Observable;
 
 import java.util.*;
 
-public class UserService {
+public class UserService extends Observable{
 
-    private UserRepo userRepo;
-    private FriendshipRepo frndRepo;
+    private UserDbRepo userRepo;
+    //private FriendshipDbRepo frndRepo;
     private UserValidator val;
     private FriendshipValidator fVal;
 
-    public UserService(UserRepo userRepo, FriendshipRepo frndRepo, UserValidator val, FriendshipValidator fVal) {
+    public UserService(UserDbRepo userRepo, FriendshipDbRepo frndRepo, UserValidator val, FriendshipValidator fVal) {
         this.userRepo = userRepo;
         this.frndRepo = frndRepo;
         this.val = val;
         this.fVal = fVal;
     }
 
-    public FriendshipRepo getFrndRepo() {
-        return frndRepo;
-    }
-
-    public void setFrndRepo(FriendshipRepo frndRepo) {
-        this.frndRepo = frndRepo;
-    }
-
-    public UserRepo getUserRepo() {
+    public UserDbRepo getUserRepo() {
         return userRepo;
     }
 
-    public void setUserRepo(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public FriendshipDbRepo getFrndRepo() {
+        return frndRepo;
     }
 
     public UserValidator getVal() {
         return val;
     }
 
-    public void setVal(UserValidator val) {
-        this.val = val;
+    public FriendshipValidator getfVal() {
+        return fVal;
     }
 
     public void addTheUser(String firstName, String lastName, String password) {
@@ -159,7 +152,7 @@ public class UserService {
         User u = new User(firstName, lastName, password);
         val.validateUser(u);
 
-        
+
 
     }
 }

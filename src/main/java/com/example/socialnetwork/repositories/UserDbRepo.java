@@ -4,6 +4,8 @@ import com.example.socialnetwork.customExceptions.RepoException;
 import com.example.socialnetwork.domain.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDbRepo implements Repository<User> {
 
@@ -115,7 +117,7 @@ public class UserDbRepo implements Repository<User> {
             ResultSet resultSet = ps.executeQuery();
 
             if (!resultSet.next()) {
-                throw new RepoException("user or password incorrect!")
+                throw new RepoException("user or password incorrect!");
             }
 
             int id = resultSet.getInt("id");
@@ -123,6 +125,30 @@ public class UserDbRepo implements Repository<User> {
 
             return user;
         }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<User> getAllUsers() {
+        try {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM users");
+            ResultSet resultSet = statement.executeQuery();
+
+            List<User> allUsers = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String first_name = resultSet.getString("first_name");
+                String last_name = resultSet.getString("last_name");
+                String password = resultSet.getString("password");
+
+                User user = new User(first_name, last_name, password);
+                user.setId(id);
+                allUsers.add(user);
+            }
+
+            return allUsers;
+        } catch (SQLException e){
             e.printStackTrace();
         }
     }

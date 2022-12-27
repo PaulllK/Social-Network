@@ -4,7 +4,7 @@ import com.example.socialnetwork.domain.Friendship;
 
 import java.sql.*;
 
-public class FriendshipDbRepo extends FriendshipRepo{
+public class FriendshipDbRepo implements Repository<Friendship>{
     private String url;
     private String userName;
     private String password;
