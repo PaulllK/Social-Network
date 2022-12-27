@@ -1,6 +1,8 @@
 package com.example.socialnetwork.controllers;
 
+import com.example.socialnetwork.SocialNetwork;
 import com.example.socialnetwork.customExceptions.RepoException;
+import com.example.socialnetwork.customExceptions.ValidatorException;
 import com.example.socialnetwork.domain.User;
 import com.example.socialnetwork.services.UserService;
 import javafx.event.ActionEvent;
@@ -35,7 +37,7 @@ public class LoginController {
         String password = passwordTextField.getText();
 
         try {
-            //User user = srv.findUserByData(firstName, lastName, password);
+            User user = srv.findUserByData(firstName, lastName, password);
 
             firstNameTextField.setText("");
             lastNameTextField.setText("");
@@ -43,9 +45,11 @@ public class LoginController {
 
 //            Stage loginStage = (Stage) firstNameTextField.getScene().getWindow();
 //            loginStage.hide();
-            User user = new User(firstName, lastName, password);
+
             startUserSession(user);
         } catch (RepoException e) {
+            PopUpMessage.showErrorMessage(e.getMessage());
+        } catch (ValidatorException e) {
             PopUpMessage.showErrorMessage(e.getMessage());
         }
     }
@@ -53,14 +57,14 @@ public class LoginController {
     private void startUserSession(User user/*, Stage loginStage* - use this parameter if log in window will be hidden*/) {
         try {
             Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("userView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("userView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
             stage.setTitle(user.getFirstName() + " " + user.getLastName());
             stage.setScene(scene);
 
             UserController userController = fxmlLoader.getController();
-            //userController.setData(srv, user);
+            userController.setData(srv, user);
 
             stage.show();
         } catch (IOException exception) {

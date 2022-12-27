@@ -22,17 +22,17 @@ public class SocialNetwork extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-//            String url = "jdbc:postgresql://localhost:5432/social_network";
-//            String username = "postgres";
-//            String password = "postgres";
-//
-//            UserDbRepo repo = new UserDbRepo(url, username, password);
-//            FriendshipDbRepo frndRepo = new FriendshipDbRepo(url, username, password);
-//
-//            UserValidator val = new UserValidator();
-//            FriendshipValidator fVal = new FriendshipValidator();
-//
-//            UserService srv = new UserService(repo, frndRepo, val, fVal);
+            String url = "jdbc:postgresql://localhost:5432/social_network";
+            String username = "postgres";
+            String password = "postgres";
+
+            UserDbRepo repo = new UserDbRepo(url, username, password);
+            FriendshipDbRepo frndRepo = new FriendshipDbRepo(url, username, password);
+
+            UserValidator val = new UserValidator();
+            FriendshipValidator fVal = new FriendshipValidator();
+
+            UserService srv = new UserService(repo, frndRepo, val, fVal);
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loginView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -41,7 +41,7 @@ public class SocialNetwork extends Application {
             primaryStage.setScene(scene);
 
             LoginController logInController = fxmlLoader.getController();
-            //logInController.setSrv(srv);
+            logInController.setSrv(srv);
 
             primaryStage.show();
         }catch (IOException e) {

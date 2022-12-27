@@ -117,7 +117,7 @@ public class UserDbRepo implements Repository<User> {
             ResultSet resultSet = ps.executeQuery();
 
             if (!resultSet.next()) {
-                throw new RepoException("user or password incorrect!");
+                throw new RepoException("user is nonexistent or password is incorrect!");
             }
 
             int id = resultSet.getInt("id");
