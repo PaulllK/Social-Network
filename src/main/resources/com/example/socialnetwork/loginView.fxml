@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -34,10 +35,25 @@
             <Insets bottom="15.0" left="180.0" right="180.0" top="15.0" />
          </VBox.margin>
       </GridPane>
-      <Button mnemonicParsing="false" onAction="#LogUserIn" text="Log in">
+      <HBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#LogUserIn" text="Log in">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button onAction="#registerUser" mnemonicParsing="false" text="Sign up">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
          <VBox.margin>
-            <Insets bottom="15.0" top="15.0" />
+            <Insets />
          </VBox.margin>
-      </Button>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </HBox>
    </children>
 </VBox>

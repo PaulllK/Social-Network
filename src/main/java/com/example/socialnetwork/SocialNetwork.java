@@ -37,7 +37,7 @@ public class SocialNetwork extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loginView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
 
-            primaryStage.setTitle("Log In");
+            primaryStage.setTitle("Social Network App");
             primaryStage.setScene(scene);
 
             LoginController logInController = fxmlLoader.getController();

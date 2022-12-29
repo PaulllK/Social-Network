@@ -153,4 +153,11 @@ public class UserService extends Observable{
         frndRepo.add(f);
         notifyAllObservers();
     }
+
+    public void registerUser(String firstName, String lastName, String password) {
+        User u = new User(firstName, lastName, password);
+        val.validateUser(u);
+        userRepo.add(u);
+        notifyAllObservers();
+    }
 }

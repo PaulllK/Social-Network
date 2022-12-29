@@ -55,6 +55,27 @@ public class LoginController {
         }
     }
 
+    @FXML
+    public void registerUser(ActionEvent actionEvent) {
+        String firstName = firstNameTextField.getText();
+        String lastName = lastNameTextField.getText();
+        String password = passwordTextField.getText();
+
+        try {
+            srv.registerUser(firstName, lastName, password);
+
+            firstNameTextField.setText("");
+            lastNameTextField.setText("");
+            passwordTextField.setText("");
+
+            PopUpMessage.showInformationMessage("user account created");
+        } catch (RepoException e) {
+            PopUpMessage.showErrorMessage(e.getMessage());
+        } catch (ValidatorException e) {
+            PopUpMessage.showErrorMessage(e.getMessage());
+        }
+    }
+
     private void startUserSession(User user/*, Stage loginStage* - use this parameter if log in window will be hidden*/) {
         try {
             Stage stage = new Stage();

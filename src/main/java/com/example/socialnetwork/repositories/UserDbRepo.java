@@ -70,21 +70,28 @@ public class UserDbRepo {
 //        }
 //    }
     public void add(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?)";
+        String sql = "SELECT * FROM users WHERE first_name=? AND last_name=?";
         try {
-            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
-            ps.setString(3, user.getPassword());
 
-//            ps.executeUpdate();
-//            ResultSet rs = ps.getGeneratedKeys();
-//            // setting our user id in program memory list of users
-//            if(rs.next()) {
-//                int pk = rs.getInt("id");
-//                user.setId(pk);
-//            }
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()) {
+                throw new RepoException("this user already has an account");
+            }
+
+            String sqlAdd = "INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?)";
+
+            PreparedStatement statement = conn.prepareStatement(sqlAdd);
+
+            statement.setString(1, user.getFirstName());
+            statement.setString(2, user.getLastName());
+            statement.setString(3, user.getPassword());
+
+            statement.executeQuery();
         }catch (SQLException e){
             e.printStackTrace();
         }
