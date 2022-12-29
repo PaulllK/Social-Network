@@ -1,6 +1,6 @@
 package com.example.socialnetwork.services;
 
-import com.example.socialnetwork.customExceptions.RepoException;
+import com.example.socialnetwork.domain.DTOs.FriendshipDTO;
 import com.example.socialnetwork.domain.Friendship;
 import com.example.socialnetwork.domain.User;
 import com.example.socialnetwork.repositories.FriendshipDbRepo;
@@ -47,49 +47,15 @@ public class UserService extends Observable{
         userRepo.add(user);
     }
 
-    public List<User> allUsers() {
-        return userRepo.getAllUsers();
-    }
-
-    public void deleteTheUser(int id) {
-        frndRepo.deleteWithId(id);
-        userRepo.delete(id);
-    }
-
-//    private void possibleFriendship(int id1, int id2) {
-//        if(userRepo.userExists(id1) == false || userRepo.userExists(id2) == false)
-//            throw new RepoException("at least one of the users is non-existent!\n");
-//    }
-
-//    public List<User> makeFriends(int id1, int id2) {
-//        possibleFriendship(id1, id2);
+//    private void dfs(List<Integer> viz, int vf, Map<Integer, List<Integer>> network) {
+//        viz.add(vf);
 //
-//        Friendship frnd = new Friendship(id1, id2);
-//        fVal.validateFriendship(frnd);
-//        frndRepo.add(frnd);
+//        List<Integer> frIds = network.get(vf);
 //
-//        return Arrays.asList(new User[] {userRepo.find(id1), userRepo.find(id2)});
+//        for(int i = 0; i < frIds.size(); i++)
+//            if (!viz.contains(frIds.get(i)))
+//                dfs(viz, frIds.get(i), network);
 //    }
-
-//    public List<Friendship> allFrnds() {
-//        return frndRepo.getAllFriendships();
-//    }
-
-//    public List<User> deleteTheFriendship(int id) {
-//        List<User> usr = Arrays.asList(new User[] {userRepo.find(frndRepo.find(id).getId1()), userRepo.find(frndRepo.find(id).getId2())});
-//        frndRepo.delete(id);
-//        return usr;
-//    }
-
-    private void dfs(List<Integer> viz, int vf, Map<Integer, List<Integer>> network) {
-        viz.add(vf);
-
-        List<Integer> frIds = network.get(vf);
-
-        for(int i = 0; i < frIds.size(); i++)
-            if (!viz.contains(frIds.get(i)))
-                dfs(viz, frIds.get(i), network);
-    }
 
 //    public int communities() {
 //        List<User> users = userRepo.getAll();
@@ -153,5 +119,38 @@ public class UserService extends Observable{
         val.validateUser(u);
 
         return userRepo.find(u);
+    }
+
+    public List<FriendshipDTO> getFriendsAndSentRequests(User user) {
+        return frndRepo.getFriendsAndSentRequests(user);
+    }
+
+    public List<FriendshipDTO> getReceivedFriendRequests(User user) {
+        return frndRepo.getReceivedFriendRequests(user);
+    }
+
+    public void acceptFriendRequest(int friendId, int currentUserId) {
+        frndRepo.acceptFriendRequest(friendId, currentUserId);
+        notifyAllObservers();
+    }
+
+    public void rejectFriendRequest(int friendId, int currentUserId) {
+        frndRepo.deleteFriendRequest(friendId, currentUserId);
+        notifyAllObservers();
+    }
+
+    public void removeFriendOrRequest(int currentUserId, int friendId) {
+        frndRepo.deleteFriendOrRequest(currentUserId, friendId);
+        notifyAllObservers();
+    }
+
+    public List<User> getAllUsers() {
+        return userRepo.getAllUsers();
+    }
+
+    public void sendFriendRequest(User currentUser, User userToBecomeFriend) {
+        Friendship f = new Friendship(currentUser, userToBecomeFriend);
+        frndRepo.add(f);
+        notifyAllObservers();
     }
 }

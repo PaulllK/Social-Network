@@ -24,11 +24,11 @@
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                   </Text>
-                  <TableView prefWidth="330.0">
+                  <TableView fx:id="tableViewFriendRequests" prefWidth="330.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="First name" />
-                      <TableColumn prefWidth="75.0" text="Last name" />
-                        <TableColumn prefWidth="75.0" text="Sent at" />
+                      <TableColumn fx:id="tableColumnRequestFirstName" prefWidth="75.0" text="First name" />
+                      <TableColumn fx:id="tableColumnRequestLastName" prefWidth="75.0" text="Last name" />
+                      <TableColumn fx:id="tableColumnRequestSentAt" prefWidth="75.0" text="Sent at" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -36,12 +36,12 @@
                   </TableView>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="280.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Accept">
+                        <Button mnemonicParsing="false" text="Accept" onAction="#acceptFriendRequest">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" text="Reject">
+                        <Button mnemonicParsing="false" text="Reject" onAction="#rejectFriendRequest">
                            <HBox.margin>
                               <Insets left="20.0" />
                            </HBox.margin>
@@ -66,17 +66,18 @@
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                   </Text>
-                  <TableView prefWidth="330.0">
+                  <TableView fx:id="tableViewFriends" prefWidth="330.0">
                      <columns>
-                        <TableColumn prefWidth="75.0" text="Friends" />
-                        <TableColumn prefWidth="75.0" text="Since" />
-                        <TableColumn prefWidth="75.0" text="Status" />
+                        <TableColumn fx:id="tableColumnFriendsFirstName" prefWidth="75.0" text="First name" />
+                        <TableColumn fx:id="tableColumnFriendsLastName" prefWidth="75.0" text="Last name" />
+                        <TableColumn fx:id="tableColumnFriendsSince" prefWidth="75.0" text="Since" />
+                        <TableColumn fx:id="tableColumnFriendsStatus" prefWidth="75.0" text="Status" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                      </columnResizePolicy>
                   </TableView>
-                  <Button mnemonicParsing="false" text="Remove friend/Unsend friend request">
+                  <Button mnemonicParsing="false" text="Remove friend/Unsend friend request" onAction="#removeFriendOrRequest">
                      <VBox.margin>
                         <Insets bottom="15.0" top="15.0" />
                      </VBox.margin>
@@ -98,10 +99,10 @@
                   <Font size="16.0" />
                </font>
             </Text>
-            <TableView maxWidth="500.0" prefHeight="200.0" prefWidth="200.0">
+            <TableView fx:id="tableViewUsers" maxWidth="500.0" prefHeight="200.0" prefWidth="200.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="First name" />
-                <TableColumn prefWidth="75.0" text="Last name" />
+                <TableColumn fx:id="tableColumnUsersFirstName" prefWidth="75.0" text="First name" />
+                <TableColumn fx:id="tableColumnUsersLastName" prefWidth="75.0" text="Last name" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -112,8 +113,8 @@
             </TableView>
             <HBox alignment="CENTER" prefHeight="58.0" prefWidth="760.0">
                <children>
-                  <TextField promptText="search user..." />
-                  <Button mnemonicParsing="false" text="Add friend" />
+                  <TextField fx:id="textFieldSearchUser" promptText="search user..." />
+                  <Button mnemonicParsing="false" text="Add friend" onAction="#sendFriendRequest" />
                </children>
                <VBox.margin>
                   <Insets />

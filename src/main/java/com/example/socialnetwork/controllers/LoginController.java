@@ -32,6 +32,7 @@ public class LoginController {
 
     @FXML
     protected void LogUserIn(ActionEvent event) {
+
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
         String password = passwordTextField.getText();

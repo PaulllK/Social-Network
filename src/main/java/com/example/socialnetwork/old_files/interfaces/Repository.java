@@ -1,4 +1,4 @@
-package com.example.socialnetwork.repositories;
+package com.example.socialnetwork.old_files.interfaces;
 
 import com.example.socialnetwork.domain.Entity;
 import com.example.socialnetwork.domain.User;

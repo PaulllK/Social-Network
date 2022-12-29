@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDbRepo implements Repository<User> {
+public class UserDbRepo {
 
     private String url;
     private String userName;
@@ -69,8 +69,6 @@ public class UserDbRepo implements Repository<User> {
 //            e.printStackTrace();
 //        }
 //    }
-
-    @Override
     public void add(User user) {
         String sql = "INSERT INTO users (first_name, last_name, password) VALUES (?, ?, ?)";
         try {
@@ -92,7 +90,6 @@ public class UserDbRepo implements Repository<User> {
         }
     }
 
-    @Override
     public void delete(int id) {
         String sql = "DELETE FROM users WHERE id=?";
         try {
@@ -105,7 +102,6 @@ public class UserDbRepo implements Repository<User> {
         }
     }
 
-    @Override
     public User find(User user) {
         try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE first_name=? AND last_name=? AND password=?");
@@ -131,11 +127,12 @@ public class UserDbRepo implements Repository<User> {
     }
 
     public List<User> getAllUsers() {
+
+        List<User> allUsers = new ArrayList<>();
+
         try {
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM users");
             ResultSet resultSet = statement.executeQuery();
-
-            List<User> allUsers = new ArrayList<>();
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
@@ -148,10 +145,11 @@ public class UserDbRepo implements Repository<User> {
                 allUsers.add(user);
             }
 
-            return allUsers;
         } catch (SQLException e){
             e.printStackTrace();
-            return null;
         }
+
+        return allUsers;
+
     }
 }

@@ -4,28 +4,37 @@ import java.time.LocalDateTime;
 
 public class Friendship extends Entity{
 
-    private int id1, id2;
+    private User sender, receiver;
     private LocalDateTime friendsSince;
+    private boolean accepted = false;
 
-    public Friendship(int id1, int id2, LocalDateTime date) {
-        this.id1 = id1;
-        this.id2 = id2;
-        friendsSince = date;
+    public Friendship(User sender, User receiver, LocalDateTime friendsSince) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.friendsSince = friendsSince;
     }
 
-    public Friendship(int id1, int id2) {
-        this(id1, id2, LocalDateTime.now()); // calls above constructor
+    public Friendship(User sender, User receiver) {
+        this(sender, receiver, LocalDateTime.now()); // calls above constructor
     }
 
-    public int getId1() {
-        return id1;
+    public User getSender() {
+        return sender;
     }
 
-    public int getId2() {
-        return id2;
+    public User getReceiver() {
+        return receiver;
     }
 
     public LocalDateTime getFriendsSince() {
         return friendsSince;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 }
