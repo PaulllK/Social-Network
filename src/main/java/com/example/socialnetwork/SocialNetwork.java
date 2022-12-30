@@ -34,8 +34,9 @@ public class SocialNetwork extends Application {
 
             UserService srv = new UserService(repo, frndRepo, val, fVal);
 
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loginView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("views/loginView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
+            scene.getStylesheets().add(SocialNetwork.class.getResource("CSS/dark.css").toExternalForm());
 
             primaryStage.setTitle("Social Network App");
             primaryStage.setScene(scene);

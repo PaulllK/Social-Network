@@ -42,7 +42,7 @@
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button onAction="#registerUser" mnemonicParsing="false" text="Sign up">
+            <Button mnemonicParsing="false" onAction="#registerUser" text="Sign up">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>

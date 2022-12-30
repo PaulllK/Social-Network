@@ -79,8 +79,9 @@ public class LoginController {
     private void startUserSession(User user/*, Stage loginStage* - use this parameter if log in window will be hidden*/) {
         try {
             Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("userView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(SocialNetwork.class.getResource("views/userView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
+            scene.getStylesheets().add(SocialNetwork.class.getResource("CSS/dark.css").toExternalForm());
 
             stage.setTitle(user.getFirstName() + " " + user.getLastName());
             stage.setScene(scene);
