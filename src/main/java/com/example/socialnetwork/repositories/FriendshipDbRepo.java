@@ -300,4 +300,58 @@ public class FriendshipDbRepo{
             e.printStackTrace();
         }
     }
+
+    public List<User> getFriends(User user) {
+        List<User> frnds = new ArrayList<>();
+
+        try {
+            String sql = "SELECT * FROM friendships WHERE accepted=true AND (sender_id=? OR receiver_id=?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            statement.setInt(1, user.getId());
+            statement.setInt(2, user.getId());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int sender_id = resultSet.getInt("sender_id");
+                int receiver_id = resultSet.getInt("receiver_id");
+
+                // search for friend's data
+                int idToSearch;
+
+                if(user.getId() == sender_id)
+                    idToSearch = receiver_id;
+                else
+                    idToSearch = sender_id;
+
+                String findFriendSql = "SELECT * FROM users WHERE id=?";
+                PreparedStatement ps = conn.prepareStatement(findFriendSql);
+
+                ps.setInt(1, idToSearch);
+
+                ResultSet results = ps.executeQuery();
+
+                // friend should be found, so friendship is created and added to the list
+                if(results.next())
+                {
+                    int friendId = results.getInt("id");
+                    String first_name = results.getString("first_name");
+                    String last_name = results.getString("last_name");
+                    String password = results.getString("password");
+
+                    User u = new User(first_name, last_name, password);
+                    u.setId(friendId);
+
+                    frnds.add(u);
+                }
+                else
+                    throw new SQLException();
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return frnds;
+    }
 }

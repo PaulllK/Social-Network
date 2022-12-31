@@ -160,4 +160,8 @@ public class UserService extends Observable{
         userRepo.add(u);
         notifyAllObservers();
     }
+
+    public List<User> getFriends(User user) {
+        return frndRepo.getFriends(user);
+    }
 }

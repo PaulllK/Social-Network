@@ -12,10 +12,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import java.awt.Toolkit;
 
@@ -31,7 +36,9 @@ public class UserController implements Observer
     private ObservableList<FriendshipDTO> modelFriendships = FXCollections.observableArrayList();
     private ObservableList<FriendshipDTO> modelFriendRequests = FXCollections.observableArrayList();
     private ObservableList<User> modelUsers = FXCollections.observableArrayList();
+    private ObservableList<User> modelOnlyFriends = FXCollections.observableArrayList();
 
+    // friends table
     @FXML
     private TableView<FriendshipDTO> tableViewFriends;
     @FXML
@@ -43,6 +50,7 @@ public class UserController implements Observer
     @FXML
     private TableColumn<FriendshipDTO, String> tableColumnFriendsStatus;
 
+    // friend requests table
     @FXML
     private TableView<FriendshipDTO> tableViewFriendRequests;
     @FXML
@@ -52,15 +60,27 @@ public class UserController implements Observer
     @FXML
     private TableColumn<FriendshipDTO, String> tableColumnRequestSentAt;
 
+    // users tab
     @FXML
     private TableView<User> tableViewUsers;
     @FXML
     private TableColumn<User, String> tableColumnUsersFirstName;
     @FXML
     private TableColumn<User, String> tableColumnUsersLastName;
-
     @FXML
     private TextField textFieldSearchUser;
+
+    // messages tab
+    @FXML
+    private ListView listViewFriends;
+    @FXML
+    private VBox messagesVbox;
+    @FXML
+    private ScrollPane messagesSp;
+    @FXML
+    private TextField textFieldMessage;
+    @FXML
+    private Label labelNamesOfSelectedFriend;
 
     public void setData(UserService srv, User user)
     {
@@ -83,6 +103,12 @@ public class UserController implements Observer
 
         // all users except the one logged in
         modelUsers.setAll(srv.getAllUsers().stream().filter(u -> !u.equals(user)).collect(Collectors.toList()));
+
+        modelOnlyFriends.setAll(srv.getFriends(user));
+
+        //setting conversation title to names of first user in list if not empty
+        if(!modelOnlyFriends.isEmpty())
+            listViewFriends.getSelectionModel().select(modelOnlyFriends.get(0));
 
 //        int friendRequestCount = networkService.getFriendRequests(user).size();
 //        labelFriendRequestCount.setText("You have " + friendRequestCount + " friend request(s)!");
@@ -109,6 +135,27 @@ public class UserController implements Observer
         tableViewUsers.setItems(modelUsers);
 
         textFieldSearchUser.textProperty().addListener(observable -> findByNames());
+
+        listViewFriends.setItems(modelOnlyFriends);
+
+        listViewFriends.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                labelNamesOfSelectedFriend.setText(newValue.toString());
+
+                // TODO: 31/12/2022 call function to load messages on screen
+
+            }
+        });
+
+        // automatically scrolling down in the messages scroll pane when new message is received
+        messagesVbox.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                messagesSp.setVvalue((Double) newValue);
+            }
+        });
+
     }
 
     @FXML
@@ -195,6 +242,81 @@ public class UserController implements Observer
             catch (RepoException e){
                 PopUpMessage.showErrorMessage(e.getMessage());
             }
+        }
+    }
+
+    private void loadMessagesOnScreen(String content) {
+
+        User friend = (User) listViewFriends.getSelectionModel().getSelectedItem();
+
+        if(friend == null){
+            Toolkit.getDefaultToolkit().beep(); // error sound
+            PopUpMessage.showErrorMessage("no friend selected");
+        }
+        else{
+
+            srv.getMessages(user, friend);
+
+            HBox messageBox = new HBox();
+
+            messageBox.setAlignment(Pos.CENTER_RIGHT);
+            messageBox.setPadding(new Insets(5, 5, 5, 10));
+
+            // used to split message on multiple lines if it is too big
+            Text text = new Text(content);
+            TextFlow messageWrapping = new TextFlow(text);
+
+            // styling for wrapper
+            messageWrapping.setStyle(
+                    "-fx-color: rgb(239, 242, 255);" +
+                            "-fx-background-color: rgb(15, 125, 242);" +
+                            "-fx-background-radius: 20px"
+            );
+
+            messageWrapping.setPadding(new Insets(5, 10, 5, 10));
+            text.setFill(Color.color(0.934, 0.945, 0.996));
+
+            // add the message to the scroll pane
+            messageBox.getChildren().add(messageWrapping);
+            messagesVbox.getChildren().add(messageBox);
+        }
+
+    }
+
+    @FXML
+    public void sendMessage(ActionEvent actionEvent) {
+
+        String msg = textFieldMessage.getText();
+
+        if(!msg.isEmpty()){
+
+            //addMessageToDb();
+
+            HBox messageBox = new HBox();
+
+            messageBox.setAlignment(Pos.CENTER_RIGHT);
+            messageBox.setPadding(new Insets(5, 5, 5, 10));
+
+            // used to split message on multiple lines if it is too big
+            Text text = new Text(msg);
+            TextFlow messageWrapping = new TextFlow(text);
+
+            // styling for wrapper
+            messageWrapping.setStyle(
+                    "-fx-color: rgb(239, 242, 255);" +
+                    "-fx-background-color: rgb(15, 125, 242);" +
+                    "-fx-background-radius: 20px"
+            );
+
+            messageWrapping.setPadding(new Insets(5, 10, 5, 10));
+            text.setFill(Color.color(0.934, 0.945, 0.996));
+
+            // add the message to the scroll pane
+            messageBox.getChildren().add(messageWrapping);
+            messagesVbox.getChildren().add(messageBox);
+
+            textFieldMessage.setText("");
+
         }
     }
 }
