@@ -159,7 +159,7 @@
                <center>
                   <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Label fx:id="labelNamesOfSelectedFriend" text="&lt;insert names of first user&gt;">
+                        <Label fx:id="labelNamesOfSelectedFriend" text="">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
@@ -172,7 +172,7 @@
                               <VBox fx:id="messagesVbox" prefHeight="519.0" prefWidth="614.0" />
                            </content>
                         </ScrollPane>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="616.0">
+                        <HBox fx:id="messageHBox" alignment="CENTER" prefHeight="100.0" prefWidth="616.0">
                            <children>
                               <TextField fx:id="textFieldMessage" prefHeight="30.0" prefWidth="541.0" promptText="write message..." />
                               <Button mnemonicParsing="false" onAction="#sendMessage" prefHeight="30.0" prefWidth="59.0" text="Send">

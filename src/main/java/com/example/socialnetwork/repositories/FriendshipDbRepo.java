@@ -10,55 +10,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendshipDbRepo{
+public class FriendshipDbRepo extends RepositoryDb<Friendship>{
 
     // friendship entity in database will have 5 fields:
     // id(int), sender_id(int), receiver_id(int), friends_since(timestamp) and accepted(boolean)
 
-    private String url;
-    private String userName;
-    private String password;
-    private Connection conn;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public FriendshipDbRepo(String url, String userName, String password) {
-        this.url = url;
-        this.userName = userName;
-        this.password = password;
-        try {
-            conn = DriverManager.getConnection(url, userName, password);
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+        super(url, userName, password);
         //loadFromDb();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Connection getConn() {
-        return conn;
     }
 
     public DateTimeFormatter getDateFormatter() {

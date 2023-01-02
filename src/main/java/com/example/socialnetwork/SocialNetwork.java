@@ -2,6 +2,7 @@ package com.example.socialnetwork;
 
 import com.example.socialnetwork.controllers.LoginController;
 import com.example.socialnetwork.repositories.FriendshipDbRepo;
+import com.example.socialnetwork.repositories.MessageDbRepo;
 import com.example.socialnetwork.repositories.UserDbRepo;
 import com.example.socialnetwork.services.UserService;
 import com.example.socialnetwork.validators.FriendshipValidator;
@@ -28,11 +29,12 @@ public class SocialNetwork extends Application {
 
             UserDbRepo repo = new UserDbRepo(url, username, password);
             FriendshipDbRepo frndRepo = new FriendshipDbRepo(url, username, password);
+            MessageDbRepo msgRepo = new MessageDbRepo(url, username, password);
 
             UserValidator val = new UserValidator();
             FriendshipValidator fVal = new FriendshipValidator();
 
-            UserService srv = new UserService(repo, frndRepo, val, fVal);
+            UserService srv = new UserService(repo, frndRepo, msgRepo, val, fVal);
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("views/loginView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());

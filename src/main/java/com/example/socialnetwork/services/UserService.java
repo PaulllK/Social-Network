@@ -2,8 +2,10 @@ package com.example.socialnetwork.services;
 
 import com.example.socialnetwork.domain.DTOs.FriendshipDTO;
 import com.example.socialnetwork.domain.Friendship;
+import com.example.socialnetwork.domain.Message;
 import com.example.socialnetwork.domain.User;
 import com.example.socialnetwork.repositories.FriendshipDbRepo;
+import com.example.socialnetwork.repositories.MessageDbRepo;
 import com.example.socialnetwork.repositories.UserDbRepo;
 import com.example.socialnetwork.validators.FriendshipValidator;
 import com.example.socialnetwork.validators.UserValidator;
@@ -12,15 +14,16 @@ import com.example.socialnetwork.utils.observer.Observable;
 import java.util.*;
 
 public class UserService extends Observable{
-
     private UserDbRepo userRepo;
     private FriendshipDbRepo frndRepo;
+    private MessageDbRepo msgRepo;
     private UserValidator val;
     private FriendshipValidator fVal;
 
-    public UserService(UserDbRepo userRepo, FriendshipDbRepo frndRepo, UserValidator val, FriendshipValidator fVal) {
+    public UserService(UserDbRepo userRepo, FriendshipDbRepo frndRepo, MessageDbRepo msgRepo, UserValidator val, FriendshipValidator fVal) {
         this.userRepo = userRepo;
         this.frndRepo = frndRepo;
+        this.msgRepo = msgRepo;
         this.val = val;
         this.fVal = fVal;
     }
@@ -163,5 +166,15 @@ public class UserService extends Observable{
 
     public List<User> getFriends(User user) {
         return frndRepo.getFriends(user);
+    }
+
+    public List<Message> getMessages(User user, User friend) {
+        return msgRepo.getMessagesOfUsers(user, friend);
+    }
+
+    public void addMessageToDb(User sender, User receiver, String content) {
+        Message m = new Message(sender, receiver, content);
+        msgRepo.add(m);
+        notifyAllObservers();
     }
 }

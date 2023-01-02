@@ -7,47 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDbRepo {
-
-    private String url;
-    private String userName;
-    private String password;
-    private Connection conn;
+public class UserDbRepo extends RepositoryDb<User>{
 
     public UserDbRepo(String url, String userName, String password) {
-        this.url = url;
-        this.userName = userName;
-        this.password = password;
-        try {
-            conn = DriverManager.getConnection(url, userName, password);
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+        super(url, userName, password);
         //loadFromDb();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
 //    private void loadFromDb() {
@@ -97,17 +61,17 @@ public class UserDbRepo {
         }
     }
 
-    public void delete(int id) {
-        String sql = "DELETE FROM users WHERE id=?";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
+//    public void delete(int id) {
+//        String sql = "DELETE FROM users WHERE id=?";
+//        try {
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//
+//            ps.setInt(1, id);
+//            ps.executeUpdate();
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     public User find(User user) {
         try {

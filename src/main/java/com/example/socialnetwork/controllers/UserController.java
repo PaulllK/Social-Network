@@ -3,6 +3,7 @@ package com.example.socialnetwork.controllers;
 import com.example.socialnetwork.customExceptions.RepoException;
 import com.example.socialnetwork.domain.DTOs.FriendshipDTO;
 import com.example.socialnetwork.domain.Friendship;
+import com.example.socialnetwork.domain.Message;
 import com.example.socialnetwork.domain.User;
 import com.example.socialnetwork.services.UserService;
 import com.example.socialnetwork.utils.observer.Observer;
@@ -81,6 +82,8 @@ public class UserController implements Observer
     private TextField textFieldMessage;
     @FXML
     private Label labelNamesOfSelectedFriend;
+    @FXML
+    private HBox messageHBox;
 
     public void setData(UserService srv, User user)
     {
@@ -104,47 +107,68 @@ public class UserController implements Observer
         // all users except the one logged in
         modelUsers.setAll(srv.getAllUsers().stream().filter(u -> !u.equals(user)).collect(Collectors.toList()));
 
+        // resetting the list will deselect user, so we have to reselect them
+
+        User selectedFriend = (User) listViewFriends.getSelectionModel().getSelectedItem();
         modelOnlyFriends.setAll(srv.getFriends(user));
 
-        //setting conversation title to names of first user in list if not empty
-        if(!modelOnlyFriends.isEmpty())
-            listViewFriends.getSelectionModel().select(modelOnlyFriends.get(0));
+        if(!modelOnlyFriends.contains(selectedFriend)){
+            hideConversation();
+        }
+        else if(selectedFriend != null) { //setting conversation title to names of first user in list if not empty
+            listViewFriends.getSelectionModel().select(selectedFriend);
+            //labelNamesOfSelectedFriend.setText(listViewFriends.getSelectionModel().getSelectedItem().toString());
+        }
+
+        //loadMessagesOnScreen();
 
 //        int friendRequestCount = networkService.getFriendRequests(user).size();
 //        labelFriendRequestCount.setText("You have " + friendRequestCount + " friend request(s)!");
     }
 
-    @FXML
-    public void initialize() {
+    private void hideConversation(){
+        messageHBox.setVisible(false);
+        messagesVbox.getChildren().clear();
+        labelNamesOfSelectedFriend.setText("");
+    }
+
+    private void initializeFriendRequestTable(){
         tableColumnFriendsFirstName.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendFirstName"));
         tableColumnFriendsLastName.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendLastName"));
         tableColumnFriendsSince.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendshipSince"));
         tableColumnFriendsStatus.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("status"));
 
         tableViewFriends.setItems(modelFriendships);
+    }
 
+    private void initializeFriendshipsTable(){
         tableColumnRequestFirstName.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendFirstName"));
         tableColumnRequestLastName.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendLastName"));
         tableColumnRequestSentAt.setCellValueFactory(new PropertyValueFactory<FriendshipDTO, String>("friendshipSince"));
 
         tableViewFriendRequests.setItems(modelFriendRequests);
+    }
 
+    private void initializeUsersTable(){
         tableColumnUsersFirstName.setCellValueFactory(new PropertyValueFactory<User, String>("firstName"));
         tableColumnUsersLastName.setCellValueFactory(new PropertyValueFactory<User, String>("lastName"));
 
         tableViewUsers.setItems(modelUsers);
 
         textFieldSearchUser.textProperty().addListener(observable -> findByNames());
+    }
 
+    private void initializeMessagesTab(){
         listViewFriends.setItems(modelOnlyFriends);
+
+        messageHBox.setVisible(false);
 
         listViewFriends.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 labelNamesOfSelectedFriend.setText(newValue.toString());
-
-                // TODO: 31/12/2022 call function to load messages on screen
-
+                messageHBox.setVisible(true);
+                loadMessagesOnScreen();
             }
         });
 
@@ -155,7 +179,14 @@ public class UserController implements Observer
                 messagesSp.setVvalue((Double) newValue);
             }
         });
+    }
 
+    @FXML
+    public void initialize() {
+        initializeFriendRequestTable();
+        initializeFriendshipsTable();
+        initializeUsersTable();
+        initializeMessagesTab();
     }
 
     @FXML
@@ -245,78 +276,64 @@ public class UserController implements Observer
         }
     }
 
-    private void loadMessagesOnScreen(String content) {
+    private void loadMessagesOnScreen() {
 
         User friend = (User) listViewFriends.getSelectionModel().getSelectedItem();
+        messagesVbox.getChildren().clear();
 
-        if(friend == null){
-            Toolkit.getDefaultToolkit().beep(); // error sound
-            PopUpMessage.showErrorMessage("no friend selected");
+        if(friend != null){
+            List<Message> msgs = srv.getMessages(user, friend);
+
+
+            for(Message m : msgs){
+
+                HBox messageBox = new HBox();
+                messageBox.setPadding(new Insets(5, 5, 5, 10));
+
+                // used to split message on multiple lines if it is too big
+                Text text = new Text(m.getContent());
+                TextFlow messageWrapping = new TextFlow(text);
+
+                if(user.getId() == m.getSender().getId()){ // current logged-in user is the sender of this message
+                    messageBox.setAlignment(Pos.CENTER_RIGHT);
+
+                    // styling for wrapper
+                    messageWrapping.setStyle(
+                            "-fx-color: rgb(239, 242, 255);" +
+                                    "-fx-background-color: rgb(15, 125, 242);" +
+                                    "-fx-background-radius: 20px"
+                    );
+                    text.setFill(Color.color(0.934, 0.945, 0.996));
+                }else {
+                    messageBox.setAlignment(Pos.CENTER_LEFT);
+
+                    // styling for wrapper
+                    messageWrapping.setStyle(
+                            "-fx-color: rgb(239, 242, 255);" +
+                                    "-fx-background-color: rgb(233, 233, 235);" +
+                                    "-fx-background-radius: 20px"
+                    );
+                }
+
+                messageWrapping.setPadding(new Insets(5, 10, 5, 10));
+
+                // add the message to the scroll pane
+                messageBox.getChildren().add(messageWrapping);
+                messagesVbox.getChildren().add(messageBox);
+            }
         }
-        else{
-
-            srv.getMessages(user, friend);
-
-            HBox messageBox = new HBox();
-
-            messageBox.setAlignment(Pos.CENTER_RIGHT);
-            messageBox.setPadding(new Insets(5, 5, 5, 10));
-
-            // used to split message on multiple lines if it is too big
-            Text text = new Text(content);
-            TextFlow messageWrapping = new TextFlow(text);
-
-            // styling for wrapper
-            messageWrapping.setStyle(
-                    "-fx-color: rgb(239, 242, 255);" +
-                            "-fx-background-color: rgb(15, 125, 242);" +
-                            "-fx-background-radius: 20px"
-            );
-
-            messageWrapping.setPadding(new Insets(5, 10, 5, 10));
-            text.setFill(Color.color(0.934, 0.945, 0.996));
-
-            // add the message to the scroll pane
-            messageBox.getChildren().add(messageWrapping);
-            messagesVbox.getChildren().add(messageBox);
-        }
-
     }
 
     @FXML
     public void sendMessage(ActionEvent actionEvent) {
 
-        String msg = textFieldMessage.getText();
+        String content = textFieldMessage.getText();
+        User friend = (User) listViewFriends.getSelectionModel().getSelectedItem();
 
-        if(!msg.isEmpty()){
-
-            //addMessageToDb();
-
-            HBox messageBox = new HBox();
-
-            messageBox.setAlignment(Pos.CENTER_RIGHT);
-            messageBox.setPadding(new Insets(5, 5, 5, 10));
-
-            // used to split message on multiple lines if it is too big
-            Text text = new Text(msg);
-            TextFlow messageWrapping = new TextFlow(text);
-
-            // styling for wrapper
-            messageWrapping.setStyle(
-                    "-fx-color: rgb(239, 242, 255);" +
-                    "-fx-background-color: rgb(15, 125, 242);" +
-                    "-fx-background-radius: 20px"
-            );
-
-            messageWrapping.setPadding(new Insets(5, 10, 5, 10));
-            text.setFill(Color.color(0.934, 0.945, 0.996));
-
-            // add the message to the scroll pane
-            messageBox.getChildren().add(messageWrapping);
-            messagesVbox.getChildren().add(messageBox);
-
+        if(!content.isEmpty()){
+            srv.addMessageToDb(user, friend, content);
             textFieldMessage.setText("");
-
         }
+
     }
 }
